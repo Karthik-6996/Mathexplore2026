@@ -194,6 +194,7 @@ nav {
 
 /* ── LAYOUT ── */
 .page-inner { max-width: 1200px; margin: 0 auto; }
+.hero-shell { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
 section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
 .sec-header { margin-bottom: 48px; }
 .sec-tag {
@@ -250,6 +251,7 @@ section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
 }
 input[type=range] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%; height: 3px;
   background: var(--border);
   border-radius: 2px;
@@ -258,6 +260,7 @@ input[type=range] {
 }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 14px; height: 14px;
   background: var(--blue);
   border-radius: 50%;
@@ -334,6 +337,8 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   border-bottom: 1px solid var(--border);
 }
 .coeff-tbl { width: 100%; border-collapse: collapse; }
+.table-scroll { overflow-x: auto; }
+.table-scroll .coeff-tbl { min-width: 640px; }
 .coeff-tbl th {
   font-family: 'Geist Mono', monospace;
   font-size: 0.6rem;
@@ -482,15 +487,179 @@ footer {
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
+@media(max-width:1024px){
+  nav { padding: 0 24px; }
+  .hero-shell { padding: 0 24px; }
+  .hero { gap: 32px; grid-template-columns: 1fr 360px; }
+  section { padding: 56px 24px; }
+  .result-num { font-size: 4.6rem; }
+}
+
 @media(max-width:768px){
   nav { padding: 0 20px; }
+  .nav-pill { display: none; }
   .nav-links { display: none; }
-  .hero { grid-template-columns: 1fr; padding: 48px 20px; }
+  .hero-shell { padding: 0 20px; }
+  .hero { grid-template-columns: 1fr; padding: 48px 0 40px; gap: 26px; }
+  .hero-eq-card { padding: 20px; }
+  .hero-stats { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .stat-box { padding: 14px 10px; }
+  .stat-num { font-size: 1.4rem; }
   section { padding: 48px 20px; }
+  .result-num { font-size: 3.8rem; }
   .metrics-row { grid-template-columns: 1fr 1fr; }
   .val-grid { grid-template-columns: 1fr; }
   .vif-row { grid-template-columns: repeat(3,1fr); }
+  .chart-wrap { height: 180px; }
+  footer {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .footer-meta { text-align: left; }
+  .chatbot-wrap { border-radius: 12px; }
+  .chatbot-messages { height: 320px; }
+  .msg-bubble { max-width: 86%; }
 }
+
+@media(max-width:480px){
+  nav { height: 52px; padding: 0 14px; }
+  .nav-logo { font-size: 1.05rem; }
+  .hero-shell { padding: 0 14px; }
+  .hero { padding: 38px 0 30px; }
+  section { padding: 40px 14px; }
+  .dataset-note { padding: 14px; }
+  .metrics-row { grid-template-columns: 1fr; }
+  .vif-row { grid-template-columns: 1fr 1fr; }
+  .chatbot-suggestions { padding: 10px 12px; }
+  .chatbot-input { padding: 14px 12px; }
+  .chatbot-send { padding: 0 14px; font-size: 0.78rem; }
+  .suggestion-btn { font-size: 0.67rem; }
+}
+
+/* ── CHATBOT ── */
+#chatbot { background: var(--white); }
+.chatbot-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.chatbot-header {
+  background: var(--ink);
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.chatbot-header .ch-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.chatbot-header .ch-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 700; color: white;
+}
+.chatbot-header .ch-sub {
+  font-size: 0.72rem; color: #9CA3AF; margin-left: auto;
+  font-family: 'Geist Mono', monospace;
+}
+.chatbot-messages {
+  height: 380px;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--bg);
+  display: flex; flex-direction: column; gap: 12px;
+  scroll-behavior: smooth;
+}
+.chatbot-messages::-webkit-scrollbar { width: 4px; }
+.chatbot-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.msg {
+  display: flex; gap: 10px; align-items: flex-start;
+  animation: msgIn 0.3s ease;
+}
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.msg.user { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; flex-shrink: 0; font-weight: 700;
+}
+.msg.ai .msg-avatar { background: var(--blue); color: white; }
+.msg.user .msg-avatar { background: var(--ink); color: white; }
+.msg-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.msg.ai .msg-bubble {
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  border-top-left-radius: 2px;
+}
+.msg.user .msg-bubble {
+  background: var(--blue);
+  color: white;
+  border-top-right-radius: 2px;
+}
+.msg-bubble.loading { color: var(--ink3); font-style: italic; }
+.chatbot-suggestions {
+  padding: 12px 20px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.suggestion-btn {
+  font-size: 0.72rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.suggestion-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
+.chatbot-input-row {
+  display: flex; gap: 0;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+.chatbot-input {
+  flex: 1;
+  border: none; outline: none;
+  padding: 16px 20px;
+  font-size: 0.88rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: transparent;
+  color: var(--ink);
+}
+.chatbot-input::placeholder { color: var(--ink3); }
+.chatbot-send {
+  padding: 0 24px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: background 0.15s;
+  letter-spacing: 0.3px;
+}
+.chatbot-send:hover { background: #1e40af; }
+.chatbot-send:disabled { background: var(--border); cursor: not-allowed; }
+
 </style>
 </head>
 <body>
@@ -503,15 +672,16 @@ footer {
     <a href="#model">Model</a>
     <a href="#validation">Validation</a>
     <a href="#charts">Charts</a>
+    <a href="#chatbot" style="color:var(--blue);font-weight:700;">Ask AI ✦</a>
   </div>
   <div class="nav-pill">MathXplore 2026</div>
 </nav>
 
 <!-- HERO -->
-<div style="max-width:1200px;margin:0 auto;padding:0 48px;">
+<div class="hero-shell">
 <div class="hero" style="padding:80px 0 64px; max-width:none;">
   <div>
-    <div class="hero-kicker">NMIT · ISE &amp; CSE · Mathematical Modelling</div>
+    <div class="hero-kicker">NMIT · Mathematical Modelling</div>
     <h1>Regenerative Braking &amp;<br/><span style='color:var(--blue);font-weight:800'>Battery Stress</span> Analysis</h1>
     <p class="hero-desc">A regression-based predictive system trained on 24,277 real EV driving records that quantifies how regenerative braking behaviour drives battery stress — validated with six formal statistical assumption tests.</p>
     <div class="hero-stats">
@@ -622,15 +792,17 @@ footer {
   <div class="model-layout">
     <div class="model-card">
       <div class="model-card-title">Coefficient Interpretation</div>
-      <table class="coeff-tbl">
-        <tr><th>Variable</th><th>Symbol</th><th>β Value</th><th>Interpretation</th></tr>
-        <tr><td class="feat">Intercept</td><td>β₀</td><td class="blue" id="tbl-int">—</td><td>Baseline stress</td></tr>
-        <tr><td class="feat">Regen Intensity</td><td>β₁</td><td class="blue" id="tbl-r">—</td><td>↑ recovery stress</td></tr>
-        <tr><td class="feat">Braking Force</td><td>β₂</td><td class="blue" id="tbl-b">—</td><td>↑ mechanical load</td></tr>
-        <tr><td class="feat">State of Charge</td><td>β₃</td><td class="green" id="tbl-c">—</td><td>↓ higher SOC buffers</td></tr>
-        <tr><td class="feat">Vehicle Speed</td><td>β₄</td><td class="green" id="tbl-s">—</td><td>↓ at cruise speed</td></tr>
-        <tr><td class="feat">Current Draw</td><td>β₅</td><td class="blue" id="tbl-cu">—</td><td>↑ high draw = stress</td></tr>
-      </table>
+      <div class="table-scroll">
+        <table class="coeff-tbl">
+          <tr><th>Variable</th><th>Symbol</th><th>β Value</th><th>Interpretation</th></tr>
+          <tr><td class="feat">Intercept</td><td>β₀</td><td class="blue" id="tbl-int">—</td><td>Baseline stress</td></tr>
+          <tr><td class="feat">Regen Intensity</td><td>β₁</td><td class="blue" id="tbl-r">—</td><td>↑ recovery stress</td></tr>
+          <tr><td class="feat">Braking Force</td><td>β₂</td><td class="blue" id="tbl-b">—</td><td>↑ mechanical load</td></tr>
+          <tr><td class="feat">State of Charge</td><td>β₃</td><td class="green" id="tbl-c">—</td><td>↓ higher SOC buffers</td></tr>
+          <tr><td class="feat">Vehicle Speed</td><td>β₄</td><td class="green" id="tbl-s">—</td><td>↓ at cruise speed</td></tr>
+          <tr><td class="feat">Current Draw</td><td>β₅</td><td class="blue" id="tbl-cu">—</td><td>↑ high draw = stress</td></tr>
+        </table>
+      </div>
       <div class="metrics-row" id="metrics-row"></div>
     </div>
 
@@ -734,10 +906,55 @@ footer {
 </div>
 </section>
 
+
+<!-- CHATBOT -->
+<section id="chatbot">
+<div class="page-inner">
+  <div class="sec-header">
+    <div class="sec-tag">AI Assistant</div>
+    <div class="sec-title">Ask About This Project</div>
+    <div class="sec-desc">Have questions about the math, the dataset, or how the model works? Ask the AI assistant — it knows everything about RegenPredict.</div>
+  </div>
+
+  <div class="chatbot-wrap">
+    <div class="chatbot-header">
+      <div class="ch-dot"></div>
+      <div class="ch-title">RegenPredict AI Assistant</div>
+      <div class="ch-sub">Powered by Grok · MathXplore 2026</div>
+    </div>
+
+    <div class="chatbot-messages" id="chat-messages">
+      <div class="msg ai">
+        <div class="msg-avatar">AI</div>
+        <div class="msg-bubble">
+          Hi! I'm the RegenPredict AI assistant. I can explain the mathematical model, the dataset, the statistical tests, or anything about how regenerative braking affects battery degradation. What would you like to know?
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-suggestions">
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">What does R² = 0.809 mean?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">Why is Current Draw the top feature?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">Explain the stochastic model</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">What is the Durbin-Watson test?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">How does regenerative braking work?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">What is Battery Stress Index?</button>
+    </div>
+
+    <div class="chatbot-input-row">
+      <input class="chatbot-input" id="chat-input" type="text"
+        placeholder="Ask anything about the model, math, or EV batteries..."
+        onkeydown="if(event.key==='Enter') sendMessage()" />
+      <button class="chatbot-send" id="chat-send" onclick="sendMessage()">Send →</button>
+    </div>
+  </div>
+</div>
+</section>
+
 <footer>
   <div class="footer-brand">RegenPredict</div>
   <div class="footer-meta">
-    MathXplore 2026 · NMIT · Karthik G (NB25ISE104) · Disha (NB25CSE109) · Guru Raghav (NB25ISE078)<br/>
+    MathXplore 2026 · NMIT<br/>
     Real EV Telemetry · 24,277 samples · Linear R² = 0.8093
   </div>
 </footer>
@@ -973,6 +1190,140 @@ function boot() {
 }
 
 loadCoeffs();
+
+</script>
+
+<script>
+// ── CHATBOT ────────────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are the AI assistant for RegenPredict, a MathXplore 2026 mathematical modelling project by students at NMIT Bengaluru (Karthik G, Disha, Guru Raghav).
+
+PROJECT CONTEXT:
+- Title: Mathematical Modelling and AI-Assisted Analysis of Regenerative Braking Patterns and Their Impact on Battery Degradation
+- Competition: MathXplore 2026 — NMIT, Bengaluru
+- Dataset: Real EV driving telemetry — 24,277 samples, 6,624 regenerative braking events
+
+MATHEMATICAL MODEL:
+- Target: Battery Stress Index (BSI) = current draw magnitude × depth of discharge
+- Model: BSI = β₀ + β₁·RegenIntensity + β₂·BrakingForce + β₃·SOC + β₄·Speed + β₅·CurrentDraw + ε
+- Stochastic extension: ε ~ N(0, σ²)
+- β₀ = 5.2134 (intercept)
+- β₁ = +7.0705 (Regen Intensity — recovery stress)
+- β₂ = +0.0876 (Braking Force)
+- β₃ = −7.4937 (State of Charge — higher SOC reduces stress)
+- β₄ = −0.5583 (Vehicle Speed)
+- β₅ = +20.1604 (Current Draw — dominant driver, 57% importance)
+
+PERFORMANCE METRICS:
+- Linear R² = 0.8093 (explains 80.93% of battery stress variance)
+- Polynomial R² = 1.0000
+- RMSE = 9.4164, MAE = 5.6502
+
+FEATURE IMPORTANCE:
+- Current Draw: 57.0% (dominant)
+- State of Charge: 21.19%
+- Regen Intensity: 19.99%
+- Vehicle Speed: 1.58%
+- Braking Force: 0.25%
+
+STATISTICAL VALIDATION (all 6 passed):
+- Shapiro-Wilk: W=0.8398 — normality of residuals (marginal at large N is expected)
+- Durbin-Watson: DW=2.006 — no autocorrelation
+- Homoscedasticity: Breusch-Pagan proxy — acceptable
+- VIF: Max=1.69 — no multicollinearity (all under 2.0, threshold is 10)
+- Linearity: Max r=0.7743 — strong linear relationships
+- Sample Adequacy: n=24,277 for 5 features — 4,855× the minimum rule of 30
+
+TECH STACK: Python (scikit-learn, scipy, numpy, pandas), Flask REST API, HTML/CSS/JS dashboard, Chart.js
+
+Answer questions clearly and concisely. You are helping judges and professors understand this student project. Be accurate, educational, and encouraging. Keep answers under 150 words unless the question requires detail. Use simple language where possible but don't shy away from technical accuracy. Use minimal formatting — avoid excessive bullet points. Use bold sparingly only for key terms.`;
+
+let chatHistory = [];
+
+
+function parseMarkdown(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:0.82em;">$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul style="padding-left:16px;margin:6px 0;">$1</ul>')
+    .replace(/\n\n/g, '</p><p style="margin-top:8px;">')
+    .replace(/\n/g, '<br>');
+}
+
+function addMessage(role, text, isLoading=false) {
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role==='user' ? 'user' : 'ai');
+  const avatar = role==='user' ? 'You' : 'AI';
+  const loadingClass = isLoading ? 'loading' : '';
+  const loadingId = isLoading ? 'loading-bubble' : '';
+  const displayText = (role==='ai' && !isLoading) ? parseMarkdown(text) : text;
+  div.innerHTML = '<div class="msg-avatar">'+avatar+'</div><div class="msg-bubble '+loadingClass+'" id="'+loadingId+'">'+displayText+'</div>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  sendBtn.disabled = true;
+  sendBtn.textContent = '...';
+
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  const loadingEl = addMessage('ai', 'Thinking...', true);
+
+  try {
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 512,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...chatHistory
+        ]
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error?.message || data.error || 'Chat request failed');
+    }
+    const reply = data.choices?.[0]?.message?.content
+      || data.error?.message
+      || 'Sorry, I could not get a response. Please try again.';
+
+    loadingEl.remove();
+    addMessage('ai', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+
+  } catch(err) {
+    console.error('Chat error:', err);
+    loadingEl.remove();
+    addMessage('ai', 'Error: ' + err.message + '. Check console for details.');
+  }
+
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send →';
+  input.focus();
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendMessage();
+}
+
 </script>
 </body>
 </html>
