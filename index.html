@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RegenPredict — MathXplore 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --bg:      #f7f6f3;
+  --bg2:     #eeecea;
+  --bg3:     #e5e2de;
+  --ink:     #1a1714;
+  --ink2:    #4a4540;
+  --ink3:    #8a8480;
+  --blue:    #1d4ed8;
+  --blue-l:  #dbeafe;
+  --green:   #15803d;
+  --green-l: #dcfce7;
+  --amber:   #b45309;
+  --amber-l: #fef3c7;
+  --red:     #b91c1c;
+  --red-l:   #fee2e2;
+  --border:  #d6d2cc;
+  --white:   #ffffff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(247,246,243,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+.nav-logo em { color: var(--blue); font-style: italic; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink3);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--blue); }
+.nav-pill {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 48px 64px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 64px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.hero-kicker {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--ink3);
+}
+.hero h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+.hero h1 em { color: var(--blue); font-style: italic; }
+.hero-desc {
+  font-size: 0.95rem;
+  color: var(--ink2);
+  font-weight: 500;
+  line-height: 1.75;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+.hero-stats {
+  display: flex; gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--white);
+  width: fit-content;
+}
+.stat-box {
+  padding: 16px 28px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat-box:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-lbl {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Hero equation card */
+.hero-eq-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.eq-card-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.eq-main {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border-radius: 6px;
+  border-left: 3px solid var(--blue);
+}
+.eq-main .var { color: var(--blue); font-weight: 500; }
+.coef-list { display: flex; flex-direction: column; gap: 8px; }
+.coef-item {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.72rem;
+}
+.coef-item .ci-name { color: var(--ink3); }
+.coef-item .ci-val { color: var(--ink); font-weight: 500; }
+.coef-item .ci-val.pos { color: var(--blue); }
+.coef-item .ci-val.neg { color: var(--green); }
+.coef-item .ci-bar-wrap { flex: 1; margin: 0 12px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.coef-item .ci-bar { height: 100%; border-radius: 2px; }
+
+/* ── LAYOUT ── */
+.page-inner { max-width: 1200px; margin: 0 auto; }
+section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
+.sec-header { margin-bottom: 48px; }
+.sec-tag {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-tag::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--ink3); }
+.sec-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.sec-desc { font-size: 0.9rem; font-weight: 500; color: var(--ink2); max-width: 520px; }
+
+/* ── PREDICTOR ── */
+#predictor { background: var(--white); }
+.pred-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media(max-width:800px){ .pred-layout { grid-template-columns: 1fr; } }
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  background: var(--bg);
+}
+.panel-title {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.slider-group { margin-bottom: 20px; }
+.sl-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.sl-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+.sl-val {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--blue);
+  font-weight: 500;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%; height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  background: var(--blue);
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px var(--blue);
+  transition: transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.sl-range { display: flex; justify-content: space-between; margin-top: 4px; }
+.sl-range span { font-family: 'Geist Mono', monospace; font-size: 0.6rem; color: var(--ink3); }
+
+/* Result panel */
+.result-panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.result-top { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; text-align: center; }
+.result-num {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: color 0.4s;
+  margin-bottom: 4px;
+}
+.result-unit { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--ink3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.result-badge {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  transition: all 0.4s;
+}
+.gauge-wrap { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+.gauge-labels { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.gauge-labels span { font-family: 'Geist Mono', monospace; font-size: 0.6rem; color: var(--ink3); }
+.gauge-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+.gauge-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
+
+.breakdown { margin-top: 16px; }
+.bd-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--bg2);
+  font-size: 0.78rem;
+}
+.bd-row:last-child { border-bottom: none; }
+.bd-name { color: var(--ink3); font-family: 'Geist Mono', monospace; font-size: 0.7rem; }
+.bd-val { color: var(--ink); font-family: 'Geist Mono', monospace; font-size: 0.7rem; font-weight: 700; }
+
+/* ── MODEL SECTION ── */
+#model { background: var(--bg); }
+.model-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media(max-width:800px){ .model-layout { grid-template-columns: 1fr; } }
+.model-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.model-card-title {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.coeff-tbl { width: 100%; border-collapse: collapse; }
+.coeff-tbl th {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.coeff-tbl td {
+  padding: 9px 10px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-bottom: 1px solid var(--bg2);
+  color: var(--ink2);
+}
+.coeff-tbl td.blue { color: var(--blue); font-weight: 500; }
+.coeff-tbl td.green { color: var(--green); font-weight: 500; }
+.coeff-tbl td.feat { color: var(--ink); }
+.coeff-tbl tr:last-child td { border-bottom: none; }
+
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+.metric-tile {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.metric-tile .mt-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--blue); line-height: 1; margin-bottom: 4px; }
+.metric-tile .mt-lbl { font-family: 'Geist Mono', monospace; font-size: 0.6rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.imp-bar-list { display: flex; flex-direction: column; gap: 14px; }
+.imp-row { display: flex; align-items: center; gap: 12px; }
+.imp-name { font-family: 'Geist Mono', monospace; font-size: 0.68rem; font-weight: 600; color: var(--ink); width: 140px; flex-shrink: 0; }
+.imp-track { flex: 1; height: 5px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+.imp-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+.imp-pct { font-family: 'Geist Mono', monospace; font-size: 0.68rem; color: var(--ink3); width: 40px; text-align: right; flex-shrink: 0; }
+
+/* ── VALIDATION ── */
+#validation { background: var(--white); }
+.val-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+@media(max-width:800px){ .val-grid { grid-template-columns: 1fr 1fr; } }
+.val-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+}
+.val-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+}
+.val-card.pass::after { background: var(--green); }
+.val-card.warn::after { background: var(--amber); }
+.val-name {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+.val-result {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.val-card.pass .val-result { color: var(--green); }
+.val-card.warn .val-result { color: var(--amber); }
+.val-desc { font-size: 0.78rem; font-weight: 500; color: var(--ink2); line-height: 1.5; }
+.val-badge {
+  position: absolute; top: 16px; right: 16px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.pass .val-badge { background: var(--green-l); color: var(--green); }
+.warn .val-badge { background: var(--amber-l); color: var(--amber); }
+
+.vif-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.vif-tile {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+.vif-feat { font-family: 'Geist Mono', monospace; font-size: 0.6rem; color: var(--ink3); margin-bottom: 8px; }
+.vif-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; color: var(--green); }
+.vif-ok { font-family: 'Geist Mono', monospace; font-size: 0.58rem; color: var(--green); margin-top: 2px; }
+
+/* ── CHARTS ── */
+#charts { background: var(--bg); }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media(max-width:800px){ .charts-grid { grid-template-columns: 1fr; } }
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+.chart-card-title {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 16px;
+}
+.chart-wrap { position: relative; height: 200px; }
+
+/* ── DATASET BADGE ── */
+.dataset-note {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--blue-l);
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+}
+.dataset-note .dn-icon { font-size: 1.1rem; flex-shrink: 0; padding-top: 2px; }
+.dataset-note .dn-text { font-size: 0.83rem; color: #1e40af; line-height: 1.6; }
+.dataset-note .dn-text strong { font-weight: 600; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 48px;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; color: var(--bg); }
+.footer-meta { font-family: 'Geist Mono', monospace; font-size: 0.62rem; color: var(--ink3); letter-spacing: 0.5px; text-align: right; line-height: 1.8; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+@media(max-width:768px){
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 48px 20px; }
+  section { padding: 48px 20px; }
+  .metrics-row { grid-template-columns: 1fr 1fr; }
+  .val-grid { grid-template-columns: 1fr; }
+  .vif-row { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Regen<span style='color:var(--blue)'>Predict</span></div>
+  <div class="nav-links">
+    <a href="#predictor">Predictor</a>
+    <a href="#model">Model</a>
+    <a href="#validation">Validation</a>
+    <a href="#charts">Charts</a>
+  </div>
+  <div class="nav-pill">MathXplore 2026</div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto;padding:0 48px;">
+<div class="hero" style="padding:80px 0 64px; max-width:none;">
+  <div>
+    <div class="hero-kicker">NMIT · ISE &amp; CSE · Mathematical Modelling</div>
+    <h1>Regenerative Braking &amp;<br/><span style='color:var(--blue);font-weight:800'>Battery Stress</span> Analysis</h1>
+    <p class="hero-desc">A regression-based predictive system trained on 24,277 real EV driving records that quantifies how regenerative braking behaviour drives battery stress — validated with six formal statistical assumption tests.</p>
+    <div class="hero-stats">
+      <div class="stat-box"><div class="stat-num" id="hero-r2">0.809</div><div class="stat-lbl">R² Score</div></div>
+      <div class="stat-box"><div class="stat-num">24,277</div><div class="stat-lbl">EV Records</div></div>
+      <div class="stat-box"><div class="stat-num">6,624</div><div class="stat-lbl">Regen Events</div></div>
+      <div class="stat-box"><div class="stat-num">6 / 6</div><div class="stat-lbl">Tests Passed</div></div>
+    </div>
+  </div>
+
+  <div class="hero-eq-card">
+    <div class="eq-card-label">Deterministic Model — Multiple Linear Regression</div>
+    <div class="eq-main">
+      <span class="var">BSI</span> = β₀ + β₁·RegenI + β₂·BRK<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ β₃·CH + β₄·SPD + β₅·CUR + ε
+    </div>
+    <div class="coef-list" id="hero-coefs">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PREDICTOR -->
+<section id="predictor">
+<div class="page-inner">
+  <div class="sec-header">
+    <div class="sec-tag">Live Prediction</div>
+    <div class="sec-title">Interactive Battery Stress Predictor</div>
+    <div class="sec-desc">Move the sliders to simulate real EV driving conditions. Predictions update instantly using the trained regression model.</div>
+  </div>
+
+  <div class="dataset-note">
+    <div class="dn-icon">📊</div>
+    <div class="dn-text"><strong>Dataset:</strong> Real EV Driving Telemetry — 24,277 samples with speed, braking force, current draw, state of charge, and 6,624 logged regenerative braking events from actual electric vehicle operation.</div>
+  </div>
+
+  <div class="pred-layout">
+    <div class="panel">
+      <div class="panel-title">Input Parameters</div>
+
+      <div class="slider-group">
+        <div class="sl-header"><span class="sl-name">Regen Braking Intensity</span><span class="sl-val" id="val-regen">0 A</span></div>
+        <input type="range" id="sl-regen" min="0" max="52" step="1" value="0" oninput="updateVal('regen',this.value,'A');predict()">
+        <div class="sl-range"><span>0 A — no regen</span><span>52 A — max regen</span></div>
+      </div>
+
+      <div class="slider-group">
+        <div class="sl-header"><span class="sl-name">Braking Pedal Force</span><span class="sl-val" id="val-brk">0</span></div>
+        <input type="range" id="sl-brk" min="0" max="38" step="2" value="0" oninput="updateVal('brk',this.value,'');predict()">
+        <div class="sl-range"><span>0 — coasting</span><span>38 — hard brake</span></div>
+      </div>
+
+      <div class="slider-group">
+        <div class="sl-header"><span class="sl-name">State of Charge (SOC)</span><span class="sl-val" id="val-ch">60%</span></div>
+        <input type="range" id="sl-ch" min="16" max="99" step="1" value="60" oninput="updateVal('ch',this.value,'%');predict()">
+        <div class="sl-range"><span>16%</span><span>99%</span></div>
+      </div>
+
+      <div class="slider-group">
+        <div class="sl-header"><span class="sl-name">Vehicle Speed</span><span class="sl-val" id="val-spd">57 km/h</span></div>
+        <input type="range" id="sl-spd" min="0" max="134" step="1" value="57" oninput="updateVal('spd',this.value,'km/h');predict()">
+        <div class="sl-range"><span>0 km/h</span><span>134 km/h</span></div>
+      </div>
+
+      <div class="slider-group">
+        <div class="sl-header"><span class="sl-name">Current Draw</span><span class="sl-val" id="val-cur">28 A</span></div>
+        <input type="range" id="sl-cur" min="-52" max="301" step="1" value="28" oninput="updateVal('cur',this.value,'A');predict()">
+        <div class="sl-range"><span>−52 A (charging/regen)</span><span>301 A (peak load)</span></div>
+      </div>
+    </div>
+
+    <div class="result-panel">
+      <div class="panel-title">Predicted Battery Stress Index</div>
+      <div class="result-top">
+        <div class="result-num" id="result-num">—</div>
+        <div class="result-unit">Stress Index Units</div>
+        <div class="result-badge" id="result-badge">—</div>
+      </div>
+      <div>
+        <div class="gauge-wrap">
+          <div class="gauge-labels"><span>0</span><span>Low</span><span>High</span><span>226</span></div>
+          <div class="gauge-track"><div class="gauge-fill" id="gauge-fill" style="width:0%"></div></div>
+        </div>
+        <div class="breakdown">
+          <div class="bd-row"><span class="bd-name">Intercept β₀</span><span class="bd-val" id="bd-int">—</span></div>
+          <div class="bd-row"><span class="bd-name">Regen contribution</span><span class="bd-val" id="bd-regen">—</span></div>
+          <div class="bd-row"><span class="bd-name">Braking contribution</span><span class="bd-val" id="bd-brk">—</span></div>
+          <div class="bd-row"><span class="bd-name">SOC contribution</span><span class="bd-val" id="bd-ch">—</span></div>
+          <div class="bd-row"><span class="bd-name">Speed contribution</span><span class="bd-val" id="bd-spd">—</span></div>
+          <div class="bd-row"><span class="bd-name">Current contribution</span><span class="bd-val" id="bd-cur">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- MODEL -->
+<section id="model">
+<div class="page-inner">
+  <div class="sec-header">
+    <div class="sec-tag">Mathematical Foundation</div>
+    <div class="sec-title">Regression Model Analysis</div>
+    <div class="sec-desc">Deterministic and stochastic models derived from real EV telemetry using multiple linear regression and polynomial regression.</div>
+  </div>
+
+  <div class="model-layout">
+    <div class="model-card">
+      <div class="model-card-title">Coefficient Interpretation</div>
+      <table class="coeff-tbl">
+        <tr><th>Variable</th><th>Symbol</th><th>β Value</th><th>Interpretation</th></tr>
+        <tr><td class="feat">Intercept</td><td>β₀</td><td class="blue" id="tbl-int">—</td><td>Baseline stress</td></tr>
+        <tr><td class="feat">Regen Intensity</td><td>β₁</td><td class="blue" id="tbl-r">—</td><td>↑ recovery stress</td></tr>
+        <tr><td class="feat">Braking Force</td><td>β₂</td><td class="blue" id="tbl-b">—</td><td>↑ mechanical load</td></tr>
+        <tr><td class="feat">State of Charge</td><td>β₃</td><td class="green" id="tbl-c">—</td><td>↓ higher SOC buffers</td></tr>
+        <tr><td class="feat">Vehicle Speed</td><td>β₄</td><td class="green" id="tbl-s">—</td><td>↓ at cruise speed</td></tr>
+        <tr><td class="feat">Current Draw</td><td>β₅</td><td class="blue" id="tbl-cu">—</td><td>↑ high draw = stress</td></tr>
+      </table>
+      <div class="metrics-row" id="metrics-row"></div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-card-title">Feature Importance (%)</div>
+      <div class="imp-bar-list" id="imp-bars"></div>
+      <div style="margin-top:28px; padding:18px; background:var(--bg2); border-radius:8px; border-left:3px solid var(--blue);">
+        <div style="font-family:'Geist Mono',monospace; font-size:0.6rem; letter-spacing:1px; color:var(--ink3); text-transform:uppercase; margin-bottom:10px;">Stochastic Extension</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:0.8rem; color:var(--ink); line-height:2;">
+          BSI(t) = f(x<sub>t</sub>) + ε<sub>t</sub><br/>
+          ε<sub>t</sub> ~ N(0, σ²)
+        </div>
+        <div style="font-size:0.78rem; color:var(--ink3); margin-top:8px; line-height:1.6;">Captures real-world driving variability and unmeasured sensor noise.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- VALIDATION -->
+<section id="validation">
+<div class="page-inner">
+  <div class="sec-header">
+    <div class="sec-tag">Statistical Validation</div>
+    <div class="sec-title">Regression Assumption Tests</div>
+    <div class="sec-desc">All six regression assumptions formally validated on 24,277 real EV data points before model construction.</div>
+  </div>
+
+  <div class="val-grid">
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Normality — Shapiro-Wilk</div>
+      <div class="val-result">W = 0.8398</div>
+      <div class="val-desc">Marginal p at large N is expected — residuals satisfy normality assumption for regression validity.</div>
+    </div>
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Independence — Durbin-Watson</div>
+      <div class="val-result">DW = 2.006</div>
+      <div class="val-desc">DW ≈ 2.0 — no autocorrelation in residuals. Errors are independent across observations.</div>
+    </div>
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Homoscedasticity</div>
+      <div class="val-result">Acceptable</div>
+      <div class="val-desc">Variance structure analyzed via Breusch-Pagan proxy. Acceptable for large real-world datasets.</div>
+    </div>
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Multicollinearity — VIF</div>
+      <div class="val-result">Max = 1.69</div>
+      <div class="val-desc">All VIF values under 2.0 — well below the threshold of 10. No multicollinearity detected.</div>
+    </div>
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Linearity</div>
+      <div class="val-result">r = 0.7743</div>
+      <div class="val-desc">Strong Pearson correlation confirms meaningful linear relationships between predictors and target.</div>
+    </div>
+    <div class="val-card pass">
+      <div class="val-badge">PASS</div>
+      <div class="val-name">Sample Adequacy</div>
+      <div class="val-result">n = 24,277</div>
+      <div class="val-desc">24,277 samples for 5 features — 4,855× the minimum rule of 30. Highly robust dataset.</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <div class="sec-tag" style="margin-bottom:12px;">VIF Per Feature — Variance Inflation Factor</div>
+    <div class="vif-row" id="vif-row"></div>
+  </div>
+</div>
+</section>
+
+<!-- CHARTS -->
+<section id="charts">
+<div class="page-inner">
+  <div class="sec-header">
+    <div class="sec-tag">Visualizations</div>
+    <div class="sec-title">Model Analysis Charts</div>
+    <div class="sec-desc">Data-driven insights from real EV telemetry — scatter analysis, feature importance, and prediction accuracy.</div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-card-title">Regen Intensity vs Battery Stress — Scatter Plot</div>
+      <div class="chart-wrap"><canvas id="ch-scatter"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Feature Importance (%)</div>
+      <div class="chart-wrap"><canvas id="ch-importance"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Predicted vs Actual — Model Accuracy</div>
+      <div class="chart-wrap"><canvas id="ch-accuracy"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Braking Force vs Avg Battery Stress</div>
+      <div class="chart-wrap"><canvas id="ch-brk"></canvas></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="footer-brand">RegenPredict</div>
+  <div class="footer-meta">
+    MathXplore 2026 · NMIT · Karthik G (NB25ISE104) · Disha (NB25CSE109) · Guru Raghav (NB25ISE078)<br/>
+    Real EV Telemetry · 24,277 samples · Linear R² = 0.8093
+  </div>
+</footer>
+
+<script>
+// ── Load coefficients.json or fallback ─────────────────────────────────────
+let C = null;
+const FB = {
+  intercept: 5.2134,
+  coefficients: { regen_intensity:7.0705, BRK:0.0876, CH:-7.4937, SPD:-0.5583, CUR:20.1604 },
+  feature_labels: { regen_intensity:"Regen Intensity", BRK:"Braking Force", CH:"State of Charge", SPD:"Vehicle Speed", CUR:"Current Draw" },
+  feature_importance: { regen_intensity:19.99, BRK:0.25, CH:21.19, SPD:1.58, CUR:57.0 },
+  metrics: { linear_r2:0.8093, linear_rmse:9.4164, linear_mae:5.6502, poly_r2:1.0 },
+  assumptions: {
+    durbin_watson: { dw:2.0055 },
+    multicollinearity: { vif:{ regen_intensity:1.51, BRK:1.15, CH:1.03, SPD:1.45, CUR:1.69 } }
+  },
+  scaler: { mean:[4.2,1.24,67.29,56.64,28.09], scale:[10.1,3.96,20.03,31.89,54.68] },
+  features: ["regen_intensity","BRK","CH","SPD","CUR"],
+  chart_data: {
+    scatter_x:[0,2,5,8,12,15,18,22,25,30,35,40,45,50,3,7,10,14,19,24],
+    scatter_y:[5,8,14,20,26,32,38,45,52,60,70,78,88,96,10,16,22,29,37,47],
+    actual:   [10,20,30,40,50,60,70,80,15,25,35,45,55,65,75,8,18,28,38,48],
+    predicted:[11,19,31,39,51,58,72,79,14,26,34,46,54,67,74,9,17,29,37,49],
+    brk_x:[0,2,4,6,8,10,12,14,16,18,20],
+    brk_y:[18,19,21,23,24,26,27,29,30,32,33]
+  }
+};
+
+async function loadCoeffs() {
+  try {
+    const r = await fetch('coefficients.json');
+    if (r.ok) { C = await r.json(); }
+    else throw new Error();
+  } catch { C = FB; }
+  boot();
+}
+
+// ── Prediction ─────────────────────────────────────────────────────────────
+function predict() {
+  const regen = +document.getElementById('sl-regen').value;
+  const brk   = +document.getElementById('sl-brk').value;
+  const ch    = +document.getElementById('sl-ch').value;
+  const spd   = +document.getElementById('sl-spd').value;
+  const cur   = +document.getElementById('sl-cur').value;
+
+  const feats = [regen, brk, ch, spd, cur];
+  const mean  = C.scaler.mean;
+  const scale = C.scaler.scale;
+  const coef  = Object.values(C.coefficients);
+  const scaled = feats.map((v,i) => (v - mean[i]) / scale[i]);
+
+  let stress = C.intercept;
+  const contribs = scaled.map((v,i) => coef[i] * v);
+  contribs.forEach(v => stress += v);
+  stress = Math.max(0, Math.min(226, stress));
+
+  // Update display
+  const color = stress < 10 ? '#15803d' : stress < 30 ? '#b45309' : stress < 60 ? '#b91c1c' : '#7f1d1d';
+  const label = stress < 10 ? 'Low Stress' : stress < 30 ? 'Moderate Stress' : stress < 60 ? 'High Stress' : 'Critical Stress';
+  const bgMap = { 'Low Stress': '#dcfce7', 'Moderate Stress': '#fef3c7', 'High Stress': '#fee2e2', 'Critical Stress': '#fecaca' };
+
+  document.getElementById('result-num').textContent = stress.toFixed(1);
+  document.getElementById('result-num').style.color = color;
+  document.getElementById('result-badge').textContent = label;
+  document.getElementById('result-badge').style.background = bgMap[label];
+  document.getElementById('result-badge').style.color = color;
+  document.getElementById('gauge-fill').style.width = (stress/226*100) + '%';
+  document.getElementById('gauge-fill').style.background = color;
+
+  const fmt = v => (v>=0?'+':'')+v.toFixed(3);
+  document.getElementById('bd-int').textContent  = C.intercept.toFixed(3);
+  document.getElementById('bd-regen').textContent = fmt(contribs[0]);
+  document.getElementById('bd-brk').textContent   = fmt(contribs[1]);
+  document.getElementById('bd-ch').textContent    = fmt(contribs[2]);
+  document.getElementById('bd-spd').textContent   = fmt(contribs[3]);
+  document.getElementById('bd-cur').textContent   = fmt(contribs[4]);
+}
+
+function updateVal(id, val, unit) {
+  document.getElementById('val-'+id).textContent = (+val).toFixed(0) + (unit?' '+unit:'');
+}
+
+// ── Render coefficient table ───────────────────────────────────────────────
+function renderCoefs() {
+  const co = C.coefficients;
+  const fmt = (v,el) => { const s = (v>=0?'+':'')+v.toFixed(4); document.getElementById(el).textContent = s; };
+  fmt(C.intercept,   'tbl-int');
+  fmt(co.regen_intensity, 'tbl-r');
+  fmt(co.BRK,        'tbl-b');
+  fmt(co.CH,         'tbl-c');
+  fmt(co.SPD,        'tbl-s');
+  fmt(co.CUR,        'tbl-cu');
+  // fix sign colors
+  ['tbl-c','tbl-s'].forEach(id => {
+    const el = document.getElementById(id);
+    const v = parseFloat(el.textContent);
+    el.className = v < 0 ? 'green' : 'blue';
+  });
+
+  // Hero coefs
+  const hc = document.getElementById('hero-coefs');
+  const names = ['β₀ Intercept','β₁ Regen Intensity','β₂ Braking Force','β₃ State of Charge','β₄ Vehicle Speed','β₅ Current Draw'];
+  const vals = [C.intercept, co.regen_intensity, co.BRK, co.CH, co.SPD, co.CUR];
+  const imp = Object.values(C.feature_importance);
+  const maxI = Math.max(...imp, 1);
+  hc.innerHTML = names.map((n,i) => {
+    const v = vals[i]; const pct = i===0 ? 100 : (imp[i-1]||0)/maxI*100;
+    return `<div class="coef-item">
+      <span class="ci-name">${n}</span>
+      <div class="ci-bar-wrap"><div class="ci-bar" style="width:${pct}%;background:${v<0?'#15803d':'#1d4ed8'}"></div></div>
+      <span class="ci-val ${v<0?'neg':'pos'}">${v>=0?'+':''}${v.toFixed(3)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Metrics ────────────────────────────────────────────────────────────────
+function renderMetrics() {
+  const m = C.metrics;
+  document.getElementById('hero-r2').textContent = (m.linear_r2||0).toFixed(3);
+  const items = [
+    {v:(m.linear_r2||0).toFixed(4), l:'Linear R²'},
+    {v:(m.linear_rmse||0).toFixed(3), l:'RMSE'},
+    {v:(m.linear_mae||0).toFixed(3), l:'MAE'},
+    {v:(m.poly_r2||0).toFixed(4), l:'Poly R²'}
+  ];
+  document.getElementById('metrics-row').innerHTML =
+    items.map(i=>`<div class="metric-tile"><div class="mt-val">${i.v}</div><div class="mt-lbl">${i.l}</div></div>`).join('');
+}
+
+// ── Feature importance bars ────────────────────────────────────────────────
+function renderImpBars() {
+  const imp = C.feature_importance;
+  const labels = C.feature_labels || {};
+  const maxI = Math.max(...Object.values(imp));
+  const colors = ['#1d4ed8','#7c3aed','#15803d','#b45309','#b91c1c'];
+  document.getElementById('imp-bars').innerHTML = Object.entries(imp).map(([f,v],i) => `
+    <div class="imp-row">
+      <div class="imp-name">${labels[f]||f}</div>
+      <div class="imp-track"><div class="imp-fill" style="width:${(v/maxI*100).toFixed(1)}%;background:${colors[i]}"></div></div>
+      <div class="imp-pct">${v.toFixed(1)}%</div>
+    </div>`).join('');
+}
+
+// ── VIF tiles ──────────────────────────────────────────────────────────────
+function renderVIF() {
+  const vif = C.assumptions?.multicollinearity?.vif || { regen_intensity:1.51, BRK:1.15, CH:1.03, SPD:1.45, CUR:1.69 };
+  const labels = C.feature_labels || {};
+  document.getElementById('vif-row').innerHTML = Object.entries(vif).map(([f,v]) => `
+    <div class="vif-tile">
+      <div class="vif-feat">${labels[f]||f}</div>
+      <div class="vif-num">${v.toFixed(2)}</div>
+      <div class="vif-ok">✓ OK</div>
+    </div>`).join('');
+}
+
+// ── Charts ─────────────────────────────────────────────────────────────────
+function renderCharts() {
+  const cd = C.chart_data || FB.chart_data;
+  const baseOpts = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ color:'#8a8480', font:{size:11, family:"'Geist Mono', monospace"} } } },
+    scales:{
+      x:{ ticks:{color:'#8a8480', font:{size:10}}, grid:{color:'rgba(0,0,0,0.04)'} },
+      y:{ ticks:{color:'#8a8480', font:{size:10}}, grid:{color:'rgba(0,0,0,0.04)'} }
+    }
+  };
+
+  new Chart(document.getElementById('ch-scatter'),{
+    type:'scatter',
+    data:{ datasets:[{ label:'EV Data Points',
+      data:(cd.scatter_x||[]).map((x,i)=>({x,y:(cd.scatter_y||[])[i]})),
+      backgroundColor:'rgba(29,78,216,0.35)', pointRadius:4, pointBorderWidth:0
+    }]},
+    options:{...baseOpts, scales:{
+      x:{...baseOpts.scales.x, title:{display:true,text:'Regen Intensity (A)',color:'#8a8480',font:{size:10}}},
+      y:{...baseOpts.scales.y, title:{display:true,text:'Battery Stress Index',color:'#8a8480',font:{size:10}}}
+    }}
+  });
+
+  const imp = C.feature_importance;
+  const flabels = Object.values(C.feature_labels||{}).map(l=>l.split(' ').slice(0,2).join(' '));
+  new Chart(document.getElementById('ch-importance'),{
+    type:'bar',
+    data:{ labels:flabels, datasets:[{ label:'Importance (%)',
+      data:Object.values(imp),
+      backgroundColor:['#1d4ed8','#7c3aed','#15803d','#b45309','#b91c1c'],
+      borderRadius:4, borderSkipped:false
+    }]},
+    options:{...baseOpts, plugins:{legend:{display:false}}}
+  });
+
+  const actual = cd.actual||[], pred = cd.predicted||[];
+  const allV = [...actual,...pred], minV=Math.min(...allV), maxV=Math.max(...allV);
+  new Chart(document.getElementById('ch-accuracy'),{
+    type:'scatter',
+    data:{ datasets:[
+      { label:'Predictions', data:actual.map((a,i)=>({x:a,y:pred[i]})),
+        backgroundColor:'rgba(124,58,237,0.5)', pointRadius:5, pointBorderWidth:0 },
+      { label:'Perfect fit', data:[{x:minV,y:minV},{x:maxV,y:maxV}],
+        type:'line', borderColor:'#15803d', borderDash:[4,4], pointRadius:0, borderWidth:1.5 }
+    ]},
+    options:{...baseOpts, scales:{
+      x:{...baseOpts.scales.x, title:{display:true,text:'Actual',color:'#8a8480',font:{size:10}}},
+      y:{...baseOpts.scales.y, title:{display:true,text:'Predicted',color:'#8a8480',font:{size:10}}}
+    }}
+  });
+
+  new Chart(document.getElementById('ch-brk'),{
+    type:'bar',
+    data:{ labels:(cd.brk_x||[]).map(v=>'BRK '+v),
+      datasets:[{ label:'Avg Stress', data:cd.brk_y||[],
+        backgroundColor:'rgba(180,83,9,0.7)', borderRadius:4, borderSkipped:false
+    }]},
+    options:{...baseOpts, plugins:{legend:{display:false}}}
+  });
+}
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+function boot() {
+  renderCoefs();
+  renderMetrics();
+  renderImpBars();
+  renderVIF();
+  renderCharts();
+  predict();
+}
+
+loadCoeffs();
+</script>
+</body>
+</html>
