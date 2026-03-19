@@ -83,6 +83,7 @@ def coefficients():
 def health_check():
     return jsonify({"status": "ok"})
 
+@app.route("/api/chat", methods=["POST"])
 @app.route("/chat", methods=["POST"])
 def chat():
     try:

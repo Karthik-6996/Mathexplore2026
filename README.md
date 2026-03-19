@@ -132,6 +132,7 @@ Double-click `index.html` in File Explorer, or open it in your browser directly.
 | GET | `/` | API status check |
 | POST | `/predict` | Predict battery stress index |
 | GET | `/coefficients` | Return full model coefficients + metrics |
+| POST | `/api/chat` | AI chat proxy (uses `GROQ_API_KEY`) |
 
 **Example POST request:**
 
@@ -195,3 +196,32 @@ curl -X POST http://localhost:5000/predict \
 ---
 
 *MathXplore 2026 · NMIT · ISE & CSE*
+
+---
+
+## Vercel Deployment (Flask + Frontend)
+
+This repo includes `vercel.json` and `requirements.txt` for deployment.
+
+### 1) Push to GitHub
+
+Make sure no old commits contain leaked secrets before pushing.
+
+### 2) Import repo in Vercel
+
+- Framework preset: **Other**
+- Build settings: keep defaults (Vercel reads `vercel.json`)
+
+### 3) Set environment variable
+
+In Vercel Project Settings → Environment Variables:
+
+- `GROQ_API_KEY` = your Groq API key
+
+### 4) Redeploy and test
+
+- Open `/` and confirm dashboard loads
+- Call `GET /health` and `GET /coefficients`
+- Use chatbot (frontend calls `POST /api/chat`)
+
+If chat fails with non-JSON errors, redeploy after confirming `GROQ_API_KEY` is set for the same environment (Production/Preview).
