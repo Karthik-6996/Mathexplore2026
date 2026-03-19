@@ -1303,9 +1303,13 @@ async function sendMessage() {
     if (!response.ok) {
       throw new Error(data.error?.message || data.error || 'Chat request failed');
     }
-    const reply = data.choices?.[0]?.message?.content
+    let reply = data.choices?.[0]?.message?.content
       || data.error?.message
       || 'Sorry, I could not get a response. Please try again.';
+
+    if (data.fallback && data.provider_error) {
+      reply += `\n\n(Provider status: ${data.provider_error})`;
+    }
 
     loadingEl.remove();
     addMessage('ai', reply);

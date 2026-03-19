@@ -9,6 +9,9 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pickle, json, numpy as np
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from urllib import request as urlrequest, error as urlerror
 
 app = Flask(__name__)
@@ -143,9 +146,9 @@ def chat():
                 user_message = str(msg.get("content", ""))
                 break
 
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
         if not api_key:
-            return jsonify(fallback_chat_response(user_message, "Missing GROQ_API_KEY")), 200
+            return jsonify(fallback_chat_response(user_message, "Missing GROQ_API_KEY (or GROK_API_KEY)")), 200
 
         body = json.dumps({
             "model": payload.get("model", "llama-3.3-70b-versatile"),
