@@ -131,6 +131,18 @@ def coefficients():
 def health_check():
     return jsonify({"status": "ok"})
 
+@app.route("/api/debug", methods=["GET"])
+def debug_check():
+    groq_key = os.getenv("GROQ_API_KEY")
+    grok_key = os.getenv("GROK_API_KEY")
+    key = groq_key or grok_key
+    return jsonify({
+        "GROQ_API_KEY_set": bool(groq_key),
+        "GROK_API_KEY_set": bool(grok_key),
+        "key_preview": (key[:8] + "..." + key[-4:]) if key and len(key) > 12 else ("too_short" if key else "MISSING"),
+        "key_length": len(key) if key else 0,
+    })
+
 @app.route("/api/chat", methods=["POST"])
 @app.route("/chat", methods=["POST"])
 def chat():
