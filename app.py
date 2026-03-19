@@ -8,11 +8,9 @@ Open: http://localhost:5000
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pickle, json, numpy as np
-import os
+import os, requests as http_requests
 from dotenv import load_dotenv
 load_dotenv()
-
-from urllib import request as urlrequest, error as urlerror
 
 app = Flask(__name__)
 CORS(app)
@@ -162,35 +160,28 @@ def chat():
         if not api_key:
             return jsonify(fallback_chat_response(user_message, "Missing GROQ_API_KEY (or GROK_API_KEY)")), 200
 
-        body = json.dumps({
-            "model": payload.get("model", "llama-3.3-70b-versatile"),
-            "max_tokens": int(payload.get("max_tokens", 512)),
-            "messages": messages,
-        }).encode("utf-8")
-
-        req = urlrequest.Request(
+        resp = http_requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
-            data=body,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}",
+                "User-Agent": "RegenPredict/1.0",
             },
-            method="POST",
+            json={
+                "model": payload.get("model", "llama-3.3-70b-versatile"),
+                "max_tokens": int(payload.get("max_tokens", 512)),
+                "messages": messages,
+            },
+            timeout=25,
         )
 
-        with urlrequest.urlopen(req, timeout=25) as resp:
-            result = json.loads(resp.read().decode("utf-8"))
+        if resp.status_code == 200:
+            return jsonify(resp.json())
 
-        return jsonify(result)
-    except urlerror.HTTPError as e:
-        raw_body = ""
         try:
-            raw_body = e.read().decode("utf-8")
-            err_payload = json.loads(raw_body)
-            provider_error = err_payload.get("error", raw_body)
+            provider_error = resp.json().get("error", resp.text)
         except Exception:
-            msg = raw_body.strip() if raw_body else f"Groq API HTTP {e.code}"
-            provider_error = msg
+            provider_error = f"Groq API HTTP {resp.status_code}"
         return jsonify(fallback_chat_response(user_message, str(provider_error))), 200
     except Exception as e:
         return jsonify(fallback_chat_response(user_message, str(e))), 200
