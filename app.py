@@ -29,6 +29,51 @@ except FileNotFoundError as e:
 
 FEATURES = ["regen_intensity", "BRK", "CH", "SPD", "CUR"]
 
+def local_project_answer(user_text):
+    q = (user_text or "").strip().lower()
+    if "r2" in q or "r²" in q or "accuracy" in q:
+        return (
+            "The linear model has R2 = 0.8093, which means it explains about 80.93% "
+            "of battery stress variation in the dataset."
+        )
+    if "current" in q and ("importance" in q or "top" in q):
+        return (
+            "Current Draw is the dominant driver (57.0% importance), so changes in load/"
+            "draw have the strongest impact on Battery Stress Index."
+        )
+    if "durbin" in q:
+        return "Durbin-Watson is 2.006, which indicates no significant residual autocorrelation."
+    if "stochastic" in q:
+        return "The stochastic extension is BSI(t) = f(x_t) + e_t with e_t ~ N(0, sigma^2)."
+    if "battery stress" in q or "bsi" in q:
+        return (
+            "Battery Stress Index (BSI) is modeled from regen intensity, braking force, "
+            "SOC, speed, and current draw using multiple linear regression."
+        )
+    if "regenerative braking" in q:
+        return (
+            "Regenerative braking converts vehicle kinetic energy into electrical energy "
+            "during deceleration, sending current back to the battery."
+        )
+    return (
+        "I can still help with this project even though the external AI provider is unavailable. "
+        "Ask about model metrics, feature importance, assumptions, or EV battery behavior."
+    )
+
+def fallback_chat_response(user_message, provider_error):
+    return {
+        "choices": [
+            {
+                "message": {
+                    "role": "assistant",
+                    "content": local_project_answer(user_message),
+                }
+            }
+        ],
+        "fallback": True,
+        "provider_error": provider_error,
+    }
+
 def stress_label(s):
     if s < 10:  return {"label": "Low Stress",      "color": "#22c55e"}
     if s < 30:  return {"label": "Moderate Stress", "color": "#f59e0b"}
@@ -92,9 +137,15 @@ def chat():
         if not isinstance(messages, list) or len(messages) == 0:
             return jsonify({"error": "messages must be a non-empty array"}), 400
 
+        user_message = ""
+        for msg in reversed(messages):
+            if isinstance(msg, dict) and msg.get("role") == "user":
+                user_message = str(msg.get("content", ""))
+                break
+
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            return jsonify({"error": "Server is missing GROQ_API_KEY"}), 500
+            return jsonify(fallback_chat_response(user_message, "Missing GROQ_API_KEY")), 200
 
         body = json.dumps({
             "model": payload.get("model", "llama-3.3-70b-versatile"),
@@ -121,12 +172,13 @@ def chat():
         try:
             raw_body = e.read().decode("utf-8")
             err_payload = json.loads(raw_body)
+            provider_error = err_payload.get("error", raw_body)
         except Exception:
             msg = raw_body.strip() if raw_body else f"Groq API HTTP {e.code}"
-            err_payload = {"error": msg}
-        return jsonify(err_payload), e.code
+            provider_error = msg
+        return jsonify(fallback_chat_response(user_message, str(provider_error))), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify(fallback_chat_response(user_message, str(e))), 200
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
