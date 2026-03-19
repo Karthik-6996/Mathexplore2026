@@ -117,10 +117,13 @@ def chat():
 
         return jsonify(result)
     except urlerror.HTTPError as e:
+        raw_body = ""
         try:
-            err_payload = json.loads(e.read().decode("utf-8"))
+            raw_body = e.read().decode("utf-8")
+            err_payload = json.loads(raw_body)
         except Exception:
-            err_payload = {"error": f"Groq API HTTP {e.code}"}
+            msg = raw_body.strip() if raw_body else f"Groq API HTTP {e.code}"
+            err_payload = {"error": msg}
         return jsonify(err_payload), e.code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
