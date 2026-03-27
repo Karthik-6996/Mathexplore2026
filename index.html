@@ -194,7 +194,6 @@ nav {
 
 /* ── LAYOUT ── */
 .page-inner { max-width: 1200px; margin: 0 auto; }
-.hero-shell { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
 section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
 .sec-header { margin-bottom: 48px; }
 .sec-tag {
@@ -240,6 +239,40 @@ section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
   border-bottom: 1px solid var(--border);
 }
 
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.preset-btn {
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.preset-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-l);
+}
+
+.sl-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+.sl-controls { display: flex; align-items: center; gap: 8px; }
+.sl-input {
+  width: 70px;
+  padding: 4px 6px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
 .slider-group { margin-bottom: 20px; }
 .sl-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .sl-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
@@ -251,7 +284,6 @@ section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
 }
 input[type=range] {
   -webkit-appearance: none;
-  appearance: none;
   width: 100%; height: 3px;
   background: var(--border);
   border-radius: 2px;
@@ -260,7 +292,6 @@ input[type=range] {
 }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 14px; height: 14px;
   background: var(--blue);
   border-radius: 50%;
@@ -337,8 +368,6 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   border-bottom: 1px solid var(--border);
 }
 .coeff-tbl { width: 100%; border-collapse: collapse; }
-.table-scroll { overflow-x: auto; }
-.table-scroll .coeff-tbl { min-width: 640px; }
 .coeff-tbl th {
   font-family: 'Geist Mono', monospace;
   font-size: 0.6rem;
@@ -487,55 +516,14 @@ footer {
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
-@media(max-width:1024px){
-  nav { padding: 0 24px; }
-  .hero-shell { padding: 0 24px; }
-  .hero { gap: 32px; grid-template-columns: 1fr 360px; }
-  section { padding: 56px 24px; }
-  .result-num { font-size: 4.6rem; }
-}
-
 @media(max-width:768px){
   nav { padding: 0 20px; }
-  .nav-pill { display: none; }
   .nav-links { display: none; }
-  .hero-shell { padding: 0 20px; }
-  .hero { grid-template-columns: 1fr; padding: 48px 0 40px; gap: 26px; }
-  .hero-eq-card { padding: 20px; }
-  .hero-stats { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .stat-box { padding: 14px 10px; }
-  .stat-num { font-size: 1.4rem; }
+  .hero { grid-template-columns: 1fr; padding: 48px 20px; }
   section { padding: 48px 20px; }
-  .result-num { font-size: 3.8rem; }
   .metrics-row { grid-template-columns: 1fr 1fr; }
   .val-grid { grid-template-columns: 1fr; }
   .vif-row { grid-template-columns: repeat(3,1fr); }
-  .chart-wrap { height: 180px; }
-  footer {
-    padding: 24px 20px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .footer-meta { text-align: left; }
-  .chatbot-wrap { border-radius: 12px; }
-  .chatbot-messages { height: 320px; }
-  .msg-bubble { max-width: 86%; }
-}
-
-@media(max-width:480px){
-  nav { height: 52px; padding: 0 14px; }
-  .nav-logo { font-size: 1.05rem; }
-  .hero-shell { padding: 0 14px; }
-  .hero { padding: 38px 0 30px; }
-  section { padding: 40px 14px; }
-  .dataset-note { padding: 14px; }
-  .metrics-row { grid-template-columns: 1fr; }
-  .vif-row { grid-template-columns: 1fr 1fr; }
-  .chatbot-suggestions { padding: 10px 12px; }
-  .chatbot-input { padding: 14px 12px; }
-  .chatbot-send { padding: 0 14px; font-size: 0.78rem; }
-  .suggestion-btn { font-size: 0.67rem; }
 }
 
 /* ── CHATBOT ── */
@@ -678,7 +666,7 @@ footer {
 </nav>
 
 <!-- HERO -->
-<div class="hero-shell">
+<div style="max-width:1200px;margin:0 auto;padding:0 48px;">
 <div class="hero" style="padding:80px 0 64px; max-width:none;">
   <div>
     <div class="hero-kicker">NMIT · Mathematical Modelling</div>
@@ -718,38 +706,45 @@ footer {
     <div class="dn-icon">📊</div>
     <div class="dn-text"><strong>Dataset:</strong> Real EV Driving Telemetry — 24,277 samples with speed, braking force, current draw, state of charge, and 6,624 logged regenerative braking events from actual electric vehicle operation.</div>
   </div>
-
   <div class="pred-layout">
     <div class="panel">
       <div class="panel-title">Input Parameters</div>
+      <div class="preset-row" id="preset-row">
+        <button class="preset-btn" onclick="applyPreset('city')">City stop-go</button>
+        <button class="preset-btn" onclick="applyPreset('highway')">Highway cruise</button>
+        <button class="preset-btn" onclick="applyPreset('uphill')">Uphill climb</button>
+        <button class="preset-btn" onclick="applyPreset('offroad')">Off-road</button>
+        <button class="preset-btn" onclick="applyPreset('regen')">Max regen braking</button>
+      </div>
+      <div id="preset-note" style="font-size:0.78rem;color:var(--ink3);margin-bottom:18px;">Dataset-derived values for each condition</div>
 
       <div class="slider-group">
-        <div class="sl-header"><span class="sl-name">Regen Braking Intensity</span><span class="sl-val" id="val-regen">0 A</span></div>
-        <input type="range" id="sl-regen" min="0" max="52" step="1" value="0" oninput="updateVal('regen',this.value,'A');predict()">
+        <div class="sl-header"><span class="sl-name">Regen Braking Intensity</span><span class="sl-controls"><span class="sl-val" id="val-regen">0 A</span><input class="sl-input" id="in-regen" type="number" min="0" max="52" step="1" value="0" oninput="syncInput('regen',this.value)"></span></div>
+        <input type="range" id="sl-regen" min="0" max="52" step="1" value="0" oninput="updateVal('regen',this.value,'A');syncBack('regen');predict()">
         <div class="sl-range"><span>0 A — no regen</span><span>52 A — max regen</span></div>
       </div>
 
       <div class="slider-group">
-        <div class="sl-header"><span class="sl-name">Braking Pedal Force</span><span class="sl-val" id="val-brk">0</span></div>
-        <input type="range" id="sl-brk" min="0" max="38" step="2" value="0" oninput="updateVal('brk',this.value,'');predict()">
+        <div class="sl-header"><span class="sl-name">Braking Pedal Force</span><span class="sl-controls"><span class="sl-val" id="val-brk">0</span><input class="sl-input" id="in-brk" type="number" min="0" max="38" step="2" value="0" oninput="syncInput('brk',this.value)"></span></div>
+        <input type="range" id="sl-brk" min="0" max="38" step="2" value="0" oninput="updateVal('brk',this.value,'');syncBack('brk');predict()">
         <div class="sl-range"><span>0 — coasting</span><span>38 — hard brake</span></div>
       </div>
 
       <div class="slider-group">
-        <div class="sl-header"><span class="sl-name">State of Charge (SOC)</span><span class="sl-val" id="val-ch">60%</span></div>
-        <input type="range" id="sl-ch" min="16" max="99" step="1" value="60" oninput="updateVal('ch',this.value,'%');predict()">
+        <div class="sl-header"><span class="sl-name">State of Charge (SOC)</span><span class="sl-controls"><span class="sl-val" id="val-ch">60%</span><input class="sl-input" id="in-ch" type="number" min="16" max="99" step="1" value="60" oninput="syncInput('ch',this.value)"></span></div>
+        <input type="range" id="sl-ch" min="16" max="99" step="1" value="60" oninput="updateVal('ch',this.value,'%');syncBack('ch');predict()">
         <div class="sl-range"><span>16%</span><span>99%</span></div>
       </div>
 
       <div class="slider-group">
-        <div class="sl-header"><span class="sl-name">Vehicle Speed</span><span class="sl-val" id="val-spd">57 km/h</span></div>
-        <input type="range" id="sl-spd" min="0" max="134" step="1" value="57" oninput="updateVal('spd',this.value,'km/h');predict()">
+        <div class="sl-header"><span class="sl-name">Vehicle Speed</span><span class="sl-controls"><span class="sl-val" id="val-spd">57 km/h</span><input class="sl-input" id="in-spd" type="number" min="0" max="134" step="1" value="57" oninput="syncInput('spd',this.value)"></span></div>
+        <input type="range" id="sl-spd" min="0" max="134" step="1" value="57" oninput="updateVal('spd',this.value,'km/h');syncBack('spd');predict()">
         <div class="sl-range"><span>0 km/h</span><span>134 km/h</span></div>
       </div>
 
       <div class="slider-group">
-        <div class="sl-header"><span class="sl-name">Current Draw</span><span class="sl-val" id="val-cur">28 A</span></div>
-        <input type="range" id="sl-cur" min="-52" max="301" step="1" value="28" oninput="updateVal('cur',this.value,'A');predict()">
+        <div class="sl-header"><span class="sl-name">Current Draw</span><span class="sl-controls"><span class="sl-val" id="val-cur">28 A</span><input class="sl-input" id="in-cur" type="number" min="-52" max="301" step="1" value="28" oninput="syncInput('cur',this.value)"></span></div>
+        <input type="range" id="sl-cur" min="-52" max="301" step="1" value="28" oninput="updateVal('cur',this.value,'A');syncBack('cur');predict()">
         <div class="sl-range"><span>−52 A (charging/regen)</span><span>301 A (peak load)</span></div>
       </div>
     </div>
@@ -792,17 +787,15 @@ footer {
   <div class="model-layout">
     <div class="model-card">
       <div class="model-card-title">Coefficient Interpretation</div>
-      <div class="table-scroll">
-        <table class="coeff-tbl">
-          <tr><th>Variable</th><th>Symbol</th><th>β Value</th><th>Interpretation</th></tr>
-          <tr><td class="feat">Intercept</td><td>β₀</td><td class="blue" id="tbl-int">—</td><td>Baseline stress</td></tr>
-          <tr><td class="feat">Regen Intensity</td><td>β₁</td><td class="blue" id="tbl-r">—</td><td>↑ recovery stress</td></tr>
-          <tr><td class="feat">Braking Force</td><td>β₂</td><td class="blue" id="tbl-b">—</td><td>↑ mechanical load</td></tr>
-          <tr><td class="feat">State of Charge</td><td>β₃</td><td class="green" id="tbl-c">—</td><td>↓ higher SOC buffers</td></tr>
-          <tr><td class="feat">Vehicle Speed</td><td>β₄</td><td class="green" id="tbl-s">—</td><td>↓ at cruise speed</td></tr>
-          <tr><td class="feat">Current Draw</td><td>β₅</td><td class="blue" id="tbl-cu">—</td><td>↑ high draw = stress</td></tr>
-        </table>
-      </div>
+      <table class="coeff-tbl">
+        <tr><th>Variable</th><th>Symbol</th><th>β Value</th><th>Interpretation</th></tr>
+        <tr><td class="feat">Intercept</td><td>β₀</td><td class="blue" id="tbl-int">—</td><td>Baseline stress</td></tr>
+        <tr><td class="feat">Regen Intensity</td><td>β₁</td><td class="blue" id="tbl-r">—</td><td>↑ recovery stress</td></tr>
+        <tr><td class="feat">Braking Force</td><td>β₂</td><td class="blue" id="tbl-b">—</td><td>↑ mechanical load</td></tr>
+        <tr><td class="feat">State of Charge</td><td>β₃</td><td class="green" id="tbl-c">—</td><td>↓ higher SOC buffers</td></tr>
+        <tr><td class="feat">Vehicle Speed</td><td>β₄</td><td class="green" id="tbl-s">—</td><td>↓ at cruise speed</td></tr>
+        <tr><td class="feat">Current Draw</td><td>β₅</td><td class="blue" id="tbl-cu">—</td><td>↑ high draw = stress</td></tr>
+      </table>
       <div class="metrics-row" id="metrics-row"></div>
     </div>
 
@@ -920,7 +913,7 @@ footer {
     <div class="chatbot-header">
       <div class="ch-dot"></div>
       <div class="ch-title">RegenPredict AI Assistant</div>
-      <div class="ch-sub">Powered by Grok · MathXplore 2026</div>
+      <div class="ch-sub">Powered by Groq · MathXplore 2026</div>
     </div>
 
     <div class="chatbot-messages" id="chat-messages">
@@ -1036,6 +1029,48 @@ function predict() {
 
 function updateVal(id, val, unit) {
   document.getElementById('val-'+id).textContent = (+val).toFixed(0) + (unit?' '+unit:'');
+}
+
+function syncBack(id) {
+  const slider = document.getElementById('sl-'+id);
+  const input = document.getElementById('in-'+id);
+  if (!slider || !input) return;
+  input.value = slider.value;
+}
+
+function syncInput(id, val) {
+  const n = Number(val);
+  if (!Number.isFinite(n)) return;
+  const slider = document.getElementById('sl-'+id);
+  const input = document.getElementById('in-'+id);
+  if (!slider || !input) return;
+  slider.value = n;
+  input.value = n;
+  const unit = id === 'ch' ? '%' : id === 'spd' ? 'km/h' : 'A';
+  updateVal(id, n, unit);
+  predict();
+}
+
+function applyPreset(type) {
+  const presets = {
+    city:    [20,12,60,35,40],
+    highway: [5,2,70,90,80],
+    uphill:  [10,18,55,40,150],
+    offroad: [15,20,50,25,120],
+    regen:   [50,5,65,30,-20]
+  };
+  const values = presets[type];
+  if (!values) return;
+  ['regen','brk','ch','spd','cur'].forEach((id,index) => {
+    const value = values[index];
+    const slider = document.getElementById('sl-'+id);
+    const input = document.getElementById('in-'+id);
+    if (slider) slider.value = value;
+    if (input) input.value = value;
+    const unit = id === 'ch' ? '%' : id === 'spd' ? 'km/h' : 'A';
+    updateVal(id, value, unit);
+  });
+  predict();
 }
 
 // ── Render coefficient table ───────────────────────────────────────────────
@@ -1296,20 +1331,11 @@ async function sendMessage() {
       })
     });
 
-    const contentType = response.headers.get('content-type') || '';
-    const data = contentType.includes('application/json')
-      ? await response.json()
-      : { error: await response.text() };
-    if (!response.ok) {
-      throw new Error(data.error?.message || data.error || 'Chat request failed');
-    }
-    let reply = data.choices?.[0]?.message?.content
+    const data = await response.json();
+    console.log('Groq response:', JSON.stringify(data));
+    const reply = data.choices?.[0]?.message?.content
       || data.error?.message
       || 'Sorry, I could not get a response. Please try again.';
-
-    if (data.fallback && data.provider_error) {
-      reply += `\n\n(Provider status: ${data.provider_error})`;
-    }
 
     loadingEl.remove();
     addMessage('ai', reply);
